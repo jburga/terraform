@@ -4,8 +4,8 @@ resource "aws_alb" "ac-xl-alb-jburga" {
     aws_security_group.ac-xl-sg-alb-jburga.id
   ]
   subnets = [
-    aws_subnet.ac-xl-private-a-jburga.id,
-    aws_subnet.ac-xl-private-b-jburga.id
+    aws_subnet.ac-xl-public-a-jburga.id,
+    aws_subnet.ac-xl-public-b-jburga.id
   ]
   load_balancer_type = "application"
   internal = false
