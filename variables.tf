@@ -24,3 +24,7 @@ variable "key-name-ssh" {
   type = string
   default = "default"
 }
+
+variable "peer-owner-id" {
+  type = string
+}

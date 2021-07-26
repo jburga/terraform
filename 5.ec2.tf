@@ -8,6 +8,7 @@ resource "aws_instance" "ac-xl-ec2-bastion-jburga" {
   key_name = var.key-name-ssh
   tags = {
     "Name" = "ac-xl-ec2-bastion-jburga"
+    "env" = "ac-xl-terr-lab-1"
   }
 }
 
@@ -22,6 +23,7 @@ resource "aws_instance" "ac-xl-ec2-apache-a-jburga" {
   user_data = file("${path.module}/scripts/apache.sh")
   tags = {
     "Name" = "ac-xl-ec2-apache-a-jburga"
+    "env" = "ac-xl-terr-lab-1"
   }
 }
 
@@ -36,6 +38,7 @@ resource "aws_instance" "ac-xl-ec2-apache-b-jburga" {
   user_data = file("${path.module}/scripts/apache.sh")
   tags = {
     "Name" = "ac-xl-ec2-apache-b-jburga"
+    "env" = "ac-xl-terr-lab-1"
   }
 }
 
