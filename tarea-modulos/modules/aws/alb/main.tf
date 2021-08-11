@@ -45,6 +45,7 @@ resource "aws_lb_target_group_attachment" "tga" {
 
 resource "aws_security_group" "sg" {
   vpc_id = var.vpc_id
+  name = var.sg_name
 
   egress {
     from_port = 0

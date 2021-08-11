@@ -81,6 +81,11 @@ module "pre_ec2_apps" {
       sg_id = module.pre_ec2_bastion.sg_id
       port = 80,
       protocol = "TCP"
+    },
+    three = {
+      sg_id = module.pre_alb.sg_id
+      port = 80,
+      protocol = "TCP"
     }
   }
   sg_name = var.pre_sg_name_app
