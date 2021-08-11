@@ -89,7 +89,7 @@ module "dev_ec2_apps" {
   ec2_user_data = file("./scripts/apache.sh")
 
   depends_on = [module.dev_vpc.subnets_private]
-  ec2_sg_ids = [module.dev_ec2_bastion.sg_id]
+  ec2_sg_ids = [module.dev_ec2_apps.sg_id]
 }
 
 module "dev_alb" {
