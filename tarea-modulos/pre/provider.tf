@@ -12,8 +12,8 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.prod_region
-  profile = var.prod_profile
+  region  = var.pre_region
+  profile = var.pre_profile
 }
 
 provider "http" {
