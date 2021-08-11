@@ -1,6 +1,0 @@
-profile = "jen-examen"
-region = "us-east-1"
-ami-id-ec2-aws = "ami-0dc2d3e4c0f9ebd18"
-instance-type = "t2.micro"
-key-name-ssh = "camilo-rojas-lab"
-peer-owner-id = "509130302659"

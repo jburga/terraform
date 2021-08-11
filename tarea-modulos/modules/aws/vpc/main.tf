@@ -1,79 +1,84 @@
-resource "aws_vpc" "this" {
+resource "aws_vpc" "vpc" {
   cidr_block           = var.vpc_cidr_block
   instance_tenancy     = var.vpc_instance_tenancy
   enable_dns_hostnames = var.vpc_enable_dns_hostnames
 
-  tags = merge("${var.vpc_tags}", { "Name" = "${var.vpc_name}" })
+  tags = merge(var.vpc_tags, { "Name" = var.vpc_name })
 }
 
-resource "aws_internet_gateway" "this" {
-  vpc_id = aws_vpc.this.id
-  tags   = merge("${var.vpc_tags}", { "Name" = "${var.vpc_name}-ing" })
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+  tags   = merge(var.vpc_igw_tags, { "Name" = "${var.vpc_name}-igw" })
 }
 
-// subnets
-resource "aws_subnet" "this_sub_pub" {
-  for_each = { for v in var.vpc_pub_subnets : v.name => v }
+### start subnets  ###
+resource "aws_subnet" "subnet_public" {
+  for_each = var.vpc_subnets_public
 
-  vpc_id            = aws_vpc.this.id
+  vpc_id            = aws_vpc.vpc.id
   cidr_block        = each.value.cidr_block
   availability_zone = each.value.availability_zone
 
-  tags = merge("${each.value.tags}", { Name = "${var.vpc_name}-${each.key}" })
+  tags = merge(var.vpc_subnet_tags, { Name = "${var.vpc_name}-public-${each.key}" })
 }
 
-resource "aws_subnet" "this_sub_pri" {
-  for_each = { for sp in var.vpc_pri_subnets : sp.name => sp }
+resource "aws_subnet" "subnet_private" {
+  for_each = var.vpc_subnets_private
 
-  vpc_id            = aws_vpc.this.id
+  vpc_id            = aws_vpc.vpc.id
   cidr_block        = each.value.cidr_block
   availability_zone = each.value.availability_zone
 
-  tags = merge("${each.value.tags}", { Name = "${var.vpc_name}-${each.key}" })
+  tags = merge(var.vpc_subnet_tags, { Name = "${var.vpc_name}-private-${each.key}" })
 }
 
-// subnets ########################
-// nat gateway ########################
-resource "aws_eip" "this" {
+### end subnets ###
+
+### start nat gateway ###
+resource "aws_eip" "eip" {
   vpc = true
   tags = var.vpc_tags
 }
-resource "aws_nat_gateway" "this" {
-  allocation_id = aws_eip.this.id
-  subnet_id = values(aws_subnet.this_sub_pub)[0].id
+
+resource "aws_nat_gateway" "nat_gw" {
+  allocation_id = aws_eip.eip.id
+  subnet_id = values(aws_subnet.subnet_public)[0].id
+  tags   = merge(var.vpc_nat_gw_tags, { "Name" = "${var.vpc_name}-natgw" })
 }
 
-// nat gateway ############################
+### end nat gateway ###
 
-// route table 
-resource "aws_route_table" "this-r-t-pub" {
-  vpc_id = aws_vpc.this.id
+### start route table ###
+resource "aws_route_table" "rt_public" {
+  vpc_id = aws_vpc.vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.this.id
+    gateway_id = aws_internet_gateway.igw.id
   }
-  tags = merge("${var.vpc_tags}", { Name = "${var.vpc_name}-r-t-pub" })
+  tags = merge(var.vpc_tags, { Name = "${var.vpc_name}-rt-public" })
 }
 
-resource "aws_route_table" "this-r-t-pri" {
-  vpc_id = aws_vpc.this.id
+resource "aws_route_table" "rt_private" {
+  vpc_id = aws_vpc.vpc.id
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.this.id
+    nat_gateway_id = aws_nat_gateway.nat_gw.id
   }
-  tags = merge("${var.vpc_tags}", { Name = "${var.vpc_name}-r-t-pri" })
+  tags = merge(var.vpc_tags, { Name = "${var.vpc_name}-rt-private" })
 }
 
-resource "aws_route_table_association" "this-as-pub" {
-  count = length(aws_subnet.this_sub_pub)
-  route_table_id = aws_route_table.this-r-t-pub.id
-  subnet_id      = values(aws_subnet.this_sub_pub)[count.index].id
-  depends_on = [aws_subnet.this_sub_pub, aws_route_table.this-r-t-pub]
+resource "aws_route_table_association" "rt_public_association" {
+  count = length(aws_subnet.subnet_public)
+  route_table_id = aws_route_table.rt_public.id
+  subnet_id      = values(aws_subnet.subnet_public)[count.index].id
+  depends_on = [aws_subnet.subnet_public, aws_route_table.rt_public]
 }
 
-resource "aws_route_table_association" "this-as-pri" {
-  count = length(aws_subnet.this_sub_pri)
-  route_table_id = aws_route_table.this-r-t-pri.id
-  subnet_id      = values(aws_subnet.this_sub_pri)[count.index].id
-  depends_on = [aws_subnet.this_sub_pri, aws_route_table.this-r-t-pri]
+resource "aws_route_table_association" "rt_private_association" {
+  count = length(aws_subnet.subnet_private)
+  route_table_id = aws_route_table.rt_private.id
+  subnet_id      = values(aws_subnet.subnet_private)[count.index].id
+  depends_on = [aws_subnet.subnet_private, aws_route_table.rt_private]
 }
+
+### end route table ###

@@ -11,6 +11,7 @@ module "prod_vpc" {
   vpc_igw_tags = var.prod_common_tag
   vpc_nat_gw_tags = var.prod_common_tag
   vpc_subnet_tags = var.prod_common_tag
+  vpc_tags = var.prod_common_tag
   vpc_subnets_public = {
     one = {
       cidr_block              = "10.0.81.0/24",
@@ -94,12 +95,12 @@ module "prod_alb" {
 
   ec2_instances_id = module.prod_ec2_apps.ec2_instances_id
   lb_listener_port = 80
-  lb_listener_protocol = "TCP"
+  lb_listener_protocol = "HTTP"
   lb_name = var.prod_lb_name
   lb_subnets = module.prod_vpc.subnets_public
   lb_tg_name = var.prod_tg_name
   lb_tg_port = 80
-  lb_tg_protocol = "TCP"
+  lb_tg_protocol = "HTTP"
   lb_tga_port = 80
   sg_name = var.prod_sg_name_lb
   lb_tags = var.prod_common_tag

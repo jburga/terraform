@@ -1,72 +1,66 @@
-variable "vpc_cidr_block" {
-  type    = string
-  default = "10.0.0.0/16"
+variable "vpc_tags" {
+  description = "VPC Tags"
+  type = map(string)
+  default = {}
 }
+
+variable "vpc_subnet_tags" {
+  description = "VPC Subnet Tags"
+  type = map(string)
+}
+
+variable "vpc_nat_gw_tags" {
+  description = "VPC Nat Gateway Tags"
+  type = map(string)
+}
+
+variable "vpc_igw_tags" {
+  description = "VPC Internet Gateway Tags"
+  type = map(string)
+}
+
+variable "vpc_cidr_block" {
+  description = "VPC CIDR Block"
+  type = string
+}
+
 variable "vpc_name" {
-  type    = string
-  default = "main"
+  description = "VPC Name"
+  type = string
 }
 
 variable "vpc_instance_tenancy" {
-  type    = string
+  description = "VPC Instance Tenancy"
+  type = string
   default = "default"
 }
 
 variable "vpc_enable_dns_hostnames" {
-  type    = bool
+  description = "VPC Enable DNS Hostnames"
+  type = bool
   default = false
 }
 
-variable "vpc_tags" {
-  type    = map(string)
-  default = {}
-}
-
-variable "vpc_pub_subnets" {
-  type = list(object({
-    name                    = string
-    cidr_block              = string
-    availability_zone       = string
-    map_public_ip_on_launch = bool
-    tags                    = map(string)
-  }))
-
-  default = [
-    {
-      name                    = "nombre",
-      cidr_block              = "10.1.0.0/24",
-      availability_zone       = "us-east-1a"
+variable "vpc_subnets_public" {
+  description = "VPC Subnets Public"
+  default = {
+    one = {
+      cidr_block = "10.1.0.0/24",
+      availability_zone = "us-east-1a"
       map_public_ip_on_launch = true
-      tags = {
-        "env" = "ac-xl-module-lab-f"
-      }
     }
-  ]
+  }
 }
 
-variable "vpc_pri_subnets" {
-  type = list(object({
-    name                    = string
-    cidr_block              = string
-    availability_zone       = string
-    map_public_ip_on_launch = bool
-    tags                    = map(string)
-  }))
+variable "vpc_subnets_private" {
+  description = "VPC Subnets Private"
 
-  default = [
-    {
-      name                    = "nombre",
-      cidr_block              = "10.1.0.0/24",
-      availability_zone       = "us-east-1a"
+  default = {
+    one = {
+      cidr_block = "10.1.0.0/24",
+      availability_zone = "us-east-1a"
       map_public_ip_on_launch = true
-      tags = {
-        "env" = "ac-xl-module-lab-f"
-      }
     }
-  ]
+  }
 }
 
-variable "name_subnet_nat" {
-  type    = string
-  default = "value"
-}

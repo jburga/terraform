@@ -1,3 +1,6 @@
 .idea
 .terraform
-vars.tfvars
+*.tfvars
+tarea-modulos/prod/terraform.tfstate
+tarea-modulos/prod/.terraform.tfstate.lock.info
+tarea-modulos/prod/terraform.tfstate.backup
