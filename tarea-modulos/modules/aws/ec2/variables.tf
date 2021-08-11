@@ -73,3 +73,8 @@ variable "ec2_user_data" {
   description = "EC2 User Data"
   default = ""
 }
+
+variable "ec2_sg_ids" {
+  description = "EC2 Security Group Ids"
+  type = set(string)
+}

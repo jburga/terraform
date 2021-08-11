@@ -59,6 +59,7 @@ module "dev_ec2_bastion" {
   ec2_tags = var.dev_common_tag
 
   depends_on = [module.dev_vpc.subnets_public]
+  ec2_sg_ids = [module.dev_ec2_bastion.sg_id]
 }
 
 module "dev_ec2_apps" {
@@ -88,6 +89,7 @@ module "dev_ec2_apps" {
   ec2_user_data = file("./scripts/apache.sh")
 
   depends_on = [module.dev_vpc.subnets_private]
+  ec2_sg_ids = [module.dev_ec2_bastion.sg_id]
 }
 
 module "dev_alb" {

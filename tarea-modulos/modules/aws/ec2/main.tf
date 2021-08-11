@@ -33,12 +33,12 @@ resource "aws_security_group_rule" "ingress_cidr" {
   security_group_id = aws_security_group.sg.id
 }
 
-
 resource "aws_instance" "instance" {
   for_each = var.ec2_subnets_id
 
   ami = var.ec2_ami
   instance_type = var.ec2_instance_type
+  vpc_security_group_ids = var.ec2_sg_ids
   subnet_id = each.value
   key_name = var.ec2_key_name
   user_data = var.ec2_user_data
